@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111f">
+<title>BluePass — Free Passport Photo Maker</title>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--panel:#0d1a2b;--line:#20334a;--text:#edf5ff;--muted:#9bb0c8;--blue:#1683e8;--cyan:#56c7ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#12355b 0,transparent 55%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+header{max-width:1000px;margin:auto;padding:24px 18px 10px;display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#1683e8,#54c8ff);display:grid;place-items:center;color:#fff;font-weight:900;font-size:21px;box-shadow:0 8px 25px #1683e833}h1{font-size:22px;margin:0;letter-spacing:-.5px}header p{margin:2px 0 0;color:var(--muted);font-size:13px}
+main{max-width:1000px;margin:12px auto 40px;padding:0 18px}.intro{text-align:center;margin:22px auto 26px;max-width:650px}.intro h2{font-size:clamp(25px,5vw,38px);line-height:1.12;margin:0 0 12px;letter-spacing:-1px}.intro h2 span{color:#62c8ff}.intro p{color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:linear-gradient(180deg,#0e1d30,#0a1727);border:1px solid var(--line);border-radius:20px;padding:20px;min-width:0;box-shadow:0 16px 45px #0002}.card h3{margin:0 0 14px;font-size:16px}.drop{min-height:270px;border:1.5px dashed #355778;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;cursor:pointer;transition:.2s;background:#0a192a}.drop:hover,.drop.drag{border-color:var(--cyan);background:#10263b}.uploadicon{width:54px;height:54px;border-radius:16px;background:#14395b;color:#79d2ff;display:grid;place-items:center;font-size:27px;margin-bottom:12px}.drop strong{font-size:16px}.drop small{color:var(--muted);margin-top:7px}.btn{border:0;border-radius:11px;padding:12px 16px;font:inherit;font-weight:750;cursor:pointer;transition:.15s}.primary{background:linear-gradient(120deg,#1683e8,#38b6f5);color:#fff;box-shadow:0 7px 22px #1683e833}.primary:hover{filter:brightness(1.08)}.secondary{background:#172a40;border:1px solid #2a4562;color:var(--text)}.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}.full{width:100%;margin-top:14px}.settings{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.field select,.field input{width:100%;padding:10px;background:#081525;color:var(--text);border:1px solid #2a4058;border-radius:9px;font:inherit}.field input[type=color]{height:43px;padding:4px}.hint{font-size:12px;color:var(--muted);margin:12px 0 0}.preview{min-height:270px;border-radius:14px;background:repeating-conic-gradient(#132338 0% 25%,#0d1a2b 0% 50%) 50%/20px 20px;display:grid;place-items:center;overflow:hidden;position:relative}.preview img{max-width:100%;max-height:370px;object-fit:contain;display:block}.empty{text-align:center;color:var(--muted);padding:25px}.empty .symbol{font-size:35px;display:block;margin-bottom:7px}.status{font-size:13px;color:#9ccfff;min-height:22px;margin-top:12px}.progress{height:5px;background:#1a2b3d;border-radius:9px;overflow:hidden;margin-top:8px}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#1683e8,#67d7ff);transition:width .25s}.downloads{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.details{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);margin-top:10px}.note{margin-top:18px;border:1px solid #24384f;background:#0a1726;border-radius:13px;padding:13px 15px;font-size:12px;color:var(--muted)}footer{text-align:center;color:#70859c;font-size:12px;padding:0 16px 24px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.card{padding:16px}.intro{margin-top:16px}.drop,.preview{min-height:230px}header{padding-top:17px}.downloads{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div class="logo">B</div><div><h1>BluePass <span style="color:#56c7ff">Studio</span></h1><p>Free passport-style photo maker</p></div></header>
+<main>
+<section class="intro"><h2>One photo in.<br><span>Passport-ready out.</span></h2><p>Remove the background, add blue, enhance lightly, and crop to 3:4 — right in your browser.</p></section>
+<div class="grid">
+<section class="card">
+<h3>01 / Upload & settings</h3>
+<div id="drop" class="drop" role="button" tabindex="0" aria-label="Choose photo">
+<div class="uploadicon">↑</div><strong>Drop your photo here</strong><small>or tap to choose a JPG, PNG, or WebP</small>
+<button id="choose" class="btn secondary" style="margin-top:15px" type="button">Choose photo</button>
+<input id="file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+</div>
+<div class="settings">
+<div class="field"><label for="bgColor">Background color</label><input id="bgColor" type="color" value="#1683e8"></div>
+<div class="field"><label for="size">Output size</label><select id="size"><option value="900x1200">900 × 1200 (3:4)</option><option value="600x800">600 × 800 (3:4)</option><option value="1200x1600">1200 × 1600 (3:4)</option></select></div>
+</div>
+<button id="process" class="btn primary full" disabled>✦ Auto enhance & remove background</button>
+<button id="reset" class="btn secondary full" type="button">Reset</button>
+<p class="hint">First use downloads the AI model and may take a while. Keep this page open.</p>
+</section>
+<section class="card">
+<h3>02 / Final preview</h3>
+<div id="preview" class="preview"><div class="empty"><span class="symbol">▧</span>Your finished photo appears here</div></div>
+<div id="status" class="status" role="status">Waiting for a photo.</div><div class="progress"><span id="bar"></span></div>
+<div class="details"><span id="dimensions">No output yet</span><span id="fileSize"></span></div>
+<div class="downloads"><button id="jpg" class="btn primary" disabled>Download JPG</button><button id="png" class="btn secondary" disabled>Download PNG</button></div>
+</section>
+</div>
+<div class="note"><strong style="color:#dbeaff">Privacy:</strong> your photo is processed in your browser and is not uploaded to this website's server. The AI model is downloaded from the library's CDN. This tool makes a 3:4 portrait crop, not a country-specific official print-size guarantee. Check local photo rules before submitting.</div>
+</main>
+<footer>BluePass Studio · Free browser-based processing</footer>
+<script type="module">
+const $ = id => document.getElementById(id);
+let originalFile=null, originalUrl=null, resultBlob=null, resultUrl=null, busy=false;
+const drop=$('drop'), fileInput=$('file'), processBtn=$('process');
+function setStatus(text,pct=null){$('status').textContent=text;if(pct!==null)$('bar').style.width=Math.max(0,Math.min(100,pct))+'%'}
+function showPreview(url){$('preview').innerHTML='';const img=new Image();img.alt='Processed passport photo preview';img.src=url;$('preview').appendChild(img)}
+function clearResult(){if(resultUrl)URL.revokeObjectURL(resultUrl);resultUrl=null;resultBlob=null;$('jpg').disabled=true;$('png').disabled=true;$('dimensions').textContent='No output yet';$('fileSize').textContent='';$('preview').innerHTML='<div class="empty"><span class="symbol">▧</span>Your finished photo appears here</div>'}
+function setFile(file){
+ if(!file)return;
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)){setStatus('Please choose a JPG, PNG, or WebP image.');return}
+ if(file.size>15*1024*1024){setStatus('Image is too large. Choose a file under 15 MB.');return}
+ originalFile=file;if(originalUrl)URL.revokeObjectURL(originalUrl);originalUrl=URL.createObjectURL(file);clearResult();showPreview(originalUrl);
+ $('dimensions').textContent='Original photo selected';processBtn.disabled=false;setStatus('Photo ready. Tap Auto enhance to start.',0)
+}
+drop.addEventListener('click',e=>{if(e.target!==$('choose'))fileInput.click()});
+$('choose').addEventListener('click',e=>{e.stopPropagation();fileInput.click()});
+drop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fileInput.click()}});
+fileInput.addEventListener('change',()=>{setFile(fileInput.files[0]);fileInput.value=''});
+for(const eventName of ['dragenter','dragover'])drop.addEventListener(eventName,e=>{e.preventDefault();drop.classList.add('drag')});
+for(const eventName of ['dragleave','drop'])drop.addEventListener(eventName,e=>{e.preventDefault();drop.classList.remove('drag')});
+drop.addEventListener('drop',e=>setFile(e.dataTransfer.files[0]));
+function loadImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
+function blobFromCanvas(canvas,type,quality){return new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Could not export image')),type,quality))}
+async function makeFinal(foregroundBlob){
+ const src=URL.createObjectURL(foregroundBlob);
+ try{
+  const im=await loadImage(src);
+  const [w,h]=$('size').value.split('x').map(Number);
+  const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext('2d',{alpha:false});
+  ctx.fillStyle=$('bgColor').value;ctx.fillRect(0,0,w,h);
+  // Fit the portrait to a 3:4 canvas without stretching; retain full head/shoulders where possible.
+  const scale=Math.min(w/im.width,h/im.height);
+  const dw=im.width*scale,dh=im.height*scale;
+  // Slightly brighter, cleaner rendering without changing facial identity.
+  ctx.filter='brightness(1.04) contrast(1.04) saturate(1.02)';
+  ctx.drawImage(im,(w-dw)/2,(h-dh)/2,dw,dh);ctx.filter='none';
+  return await blobFromCanvas(canvas,'image/png');
+ }finally{URL.revokeObjectURL(src)}
+}
+processBtn.addEventListener('click',async()=>{
+ if(!originalFile||busy)return;busy=true;processBtn.disabled=true;$('jpg').disabled=true;$('png').disabled=true;clearResult();
+ try{
+  setStatus('Loading AI background remover… first run can take time.',5);
+  const {default:removeBackground}=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');
+  setStatus('Removing background with AI…',15);
+  const transparent=await removeBackground(originalFile,{model:'isnet_fp16',output:{format:'image/png',quality:0.95},progress:(key,current,total)=>{if(total>0)setStatus('AI processing: '+key,Math.min(75,15+Math.round(current/total*60)))}});
+  setStatus('Applying blue background and 3:4 crop…',82);
+  const finalPng=await makeFinal(transparent);
+  resultBlob=finalPng;resultUrl=URL.createObjectURL(finalPng);showPreview(resultUrl);
+  const im=await loadImage(resultUrl);$('dimensions').textContent=im.naturalWidth+' × '+im.naturalHeight+' px';$('fileSize').textContent=(finalPng.size/1024).toFixed(0)+' KB';
+  $('jpg').disabled=false;$('png').disabled=false;setStatus('Done! Your photo is ready to download.',100);
+ }catch(err){console.error(err);setStatus('Processing failed. Check your internet and try again. '+(err?.message||''),0)}
+ finally{busy=false;processBtn.disabled=!originalFile}
+});
+async function download(type){
+ if(!resultBlob)return;let blob=resultBlob,ext='png';
+ if(type==='image/jpeg'){const im=await loadImage(resultUrl);const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;const x=c.getContext('2d');x.fillStyle=$('bgColor').value;x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0);blob=await blobFromCanvas(c,'image/jpeg',0.95);ext='jpg'}
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='bluepass-photo-3x4.'+ext;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)
+}
+$('jpg').addEventListener('click',()=>download('image/jpeg'));$('png').addEventListener('click',()=>download('image/png'));
+$('reset').addEventListener('click',()=>{if(originalUrl)URL.revokeObjectURL(originalUrl);originalUrl=null;originalFile=null;clearResult();fileInput.value='';processBtn.disabled=true;setStatus('Waiting for a photo.',0);});
+</script>
+</body>
+</html>
