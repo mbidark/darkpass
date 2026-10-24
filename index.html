@@ -88,7 +88,7 @@ async function makeFinal(foregroundBlob){
 processBtn.addEventListener('click',async()=>{
  if(!originalFile||busy)return;busy=true;processBtn.disabled=true;$('jpg').disabled=true;$('png').disabled=true;clearResult();
  try{
-  setStatus('Loading AI background remover… first run can take time.',5);
+  setStatus('Loading AI engine… the first run downloads a smaller model (~40 MB). Keep this page open.',5);
   const imgly = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');
   const removeBackground = imgly.removeBackground || imgly.default;
   if (typeof removeBackground !== 'function') {
@@ -96,10 +96,22 @@ processBtn.addEventListener('click',async()=>{
   }
   setStatus('Removing background with AI…',15);
   const transparent=await removeBackground(originalFile,{
-    model:'isnet_fp16',
+    model:'isnet_quint8',
     output:{format:'image/png',quality:0.95},
     progress:(key,current,total)=>{
-      if(total>0) setStatus('AI processing: '+key,Math.min(75,15+Math.round(current/total*60)));
+      const stage = String(key || '');
+      const ratio = total > 0 ? Math.max(0, Math.min(1, current / total)) : 0;
+      if (stage.startsWith('compute:')) {
+        const labels = {
+          'compute:decode':'Preparing image…',
+          'compute:inference':'AI is detecting the subject…',
+          'compute:mask':'Cleaning hair and edges…',
+          'compute:encode':'Creating transparent image…'
+        };
+        setStatus(labels[stage] || 'AI is processing the image…', 78 + Math.round(ratio * 15));
+      } else {
+        setStatus('Downloading AI model: ' + stage + '…', 12 + Math.round(ratio * 63));
+      }
     }
   });
   setStatus('Applying blue background and 3:4 crop…',82);
@@ -107,7 +119,7 @@ processBtn.addEventListener('click',async()=>{
   resultBlob=finalPng;resultUrl=URL.createObjectURL(finalPng);showPreview(resultUrl);
   const im=await loadImage(resultUrl);$('dimensions').textContent=im.naturalWidth+' × '+im.naturalHeight+' px';$('fileSize').textContent=(finalPng.size/1024).toFixed(0)+' KB';
   $('jpg').disabled=false;$('png').disabled=false;setStatus('Done! Your photo is ready to download.',100);
- }catch(err){console.error(err);setStatus('Processing failed. Check your internet and try again. '+(err?.message||''),0)}
+ }catch(err){console.error(err);setStatus('Processing failed. Check your internet, reload the page, and retry. Details: '+(err?.message||''),0)}
  finally{busy=false;processBtn.disabled=!originalFile}
 });
 async function download(type){
